@@ -1,2 +1,5 @@
 *.txt
-config.env
+*.log
+venv/
+.idea/
+*__pycache__*
