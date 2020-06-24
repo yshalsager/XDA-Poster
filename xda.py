@@ -10,7 +10,10 @@ from os import environ
 
 from requests import get, post
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.ui import WebDriverWait
 
 XDA_USERNAME = environ['XDA_USERNAME']
 XDA_PASSWORD = environ['XDA_PASSWORD']
@@ -29,14 +32,13 @@ class XDA:
         firefox_options.add_argument("--headless")
         firefox_options.add_argument("--window-size=1920x1080")
         driver = webdriver.Firefox(options=firefox_options)
-        driver.implicitly_wait(30)
+        wait = WebDriverWait(driver, 60)
         # Grab the current window
         main_window_handle = None
         while not main_window_handle:
             main_window_handle = driver.current_window_handle
         driver.get("http://api.xda-developers.com/explorer/")
-        login_btn = driver.find_element_by_id('login_btn')
-        login_btn.click()
+        wait.until(ec.presence_of_element_located((By.XPATH, '//div[@id="login_btn"]'))).click()
         # Swap to signin window
         signin_window_handle = None
         while not signin_window_handle:
@@ -44,25 +46,22 @@ class XDA:
                                     if handle != main_window_handle][0]
             break
         driver.switch_to.window(signin_window_handle)
+        wait.until(ec.presence_of_element_located((By.XPATH, '//form[@id="login"]')))
         username = driver.find_element_by_name("username")
         password = driver.find_element_by_name("password")
-        submit = driver.find_element_by_id("signin-submit")
         username.send_keys(XDA_USERNAME)
         password.send_keys(XDA_PASSWORD)
-        submit.click()
-        driver.implicitly_wait(15)
-        confirm_btn = driver.find_element_by_id("authorize")
-        confirm_btn.click()
+        driver.find_element_by_id("signin-submit").click()
+        wait.until(ec.presence_of_element_located((By.XPATH, '//input[@id="authorize"]'))).click()
         # Come back to main window
         driver.switch_to.window(main_window_handle)
-        driver.implicitly_wait(15)
+        api_key_text = wait.until(ec.presence_of_element_located((By.XPATH, '//div[@id="message-bar"]'))).text
         # Scrape out the API Key
-        page = driver.page_source
         try:
-            api_key = re.search(r'Access token: ([a-z0-9]+)<', page, re.MULTILINE).group(1)
-            driver.quit()
+            api_key = re.search(r'Access token: ([a-z0-9]+)', api_key_text).group(1)
         except IndexError:
             raise Exception("Could not get the API key!")
+        driver.quit()
         return api_key
 
     @staticmethod
