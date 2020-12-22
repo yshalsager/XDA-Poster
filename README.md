@@ -17,6 +17,8 @@ xda = XDA(XDA_KEY)
 thread_id = "3766138"
 xda_post = "Hello World!"
 xda.post(thread_id, xda_post)
+# async can be used too
+await post_async(thread_id, xda_post)
 ```
 Your post must be posted on XDA if all things went right!
 
