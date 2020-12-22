@@ -5,19 +5,18 @@ Then I figured out a sweet solution to feed my laziness. The XDA API!!!
 
 ### What do you need to do to get it working?
 
-* Export your XDA_USERNAME, and XDA_PASSWORD. It will be used to fetch the XDA API Key for further use.
-* **YOUR PASSWORD IS NEVER STORED ANYWHERE, YOU CAN CHECK THE SOURCE, IF YOU DONT BELIEVE ME**
+* Export your XDA_KEY, and XDA_PASSWORD. It will be used to interacte with API Key.
 * Install python3, pip, and firefox using your distro's package manager.
 `pip install -U requirements.txt`
-* Get geckodriver from [here](https://github.com/mozilla/geckodriver/releases/latest) and extract to `/usr/local/bin/geckodriver`
 
 ### Usage:
 ```python
-xda = XDA()
+from os import environ
+XDA_KEY = environ['XDA_KEY']
+xda = XDA(XDA_KEY)
 thread_id = "3766138"
-xda_post_id = xda.get_post_id(thread_id)
 xda_post = "Hello World!"
-xda.post(xda_post_id, xda_post)
+xda.post(thread_id, xda_post)
 ```
 Your post must be posted on XDA if all things went right!
 
