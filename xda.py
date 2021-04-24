@@ -29,7 +29,7 @@ class XDA:
         """
         xda_req = post(f'{self.url}/posts', data={"thread_id": thread_id, "message": message}, headers=self.headers)
         if not xda_req.status_code == 200:
-            print(f"XDA Error: {xda_req.reason}")
+            print(f"XDA Error: {resp.reason}\nResponse: {xda_req.json()}")
 
     def update_post(self, post_id, message):
         """
@@ -41,7 +41,7 @@ class XDA:
         """
         xda_req = post(f'{self.url}/posts/{post_id}', data={"message": message}, headers=self.headers)
         if not xda_req.status_code == 200:
-            print(f"XDA Error: {xda_req.reason}")
+            print(f"XDA Error: {resp.reason}\nResponse: {xda_req.json()}")
 
     async def post_async(self, thread_id, message):
         """
@@ -56,7 +56,7 @@ class XDA:
                     f'{self.url}/posts', data={"thread_id": thread_id, "message": message},
                     headers=self.headers) as resp:
                 if not resp.status == 200:
-                    print(f"XDA Error: {resp.reason}")
+                    print(f"XDA Error: {resp.reason}\nResponse: {await resp.json()}")
 
     async def update_post_async(self, post_id, message):
         """
@@ -71,4 +71,4 @@ class XDA:
                     f'{self.url}/posts/{post_id}', data={"message": message},
                     headers=self.headers) as resp:
                 if not resp.status == 200:
-                    print(f"XDA Error: {resp.reason}")
+                    print(f"XDA Error: {resp.reason}\nResponse: {await resp.json()}")
