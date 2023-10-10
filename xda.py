@@ -12,7 +12,7 @@ class XDA:
     """XDA API client"""
 
     def __init__(self, api_key):
-        self.url = "https://forum.xda-developers.com/api"
+        self.url = "https://xdaforums.com/api"
         self.api_key = api_key
         self.headers = {
             'XF-Api-Key': self.api_key,
