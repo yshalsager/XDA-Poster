@@ -1,2 +1,1 @@
-requests
-aiohttp
+httpx[http2]
