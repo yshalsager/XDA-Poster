@@ -19,7 +19,7 @@ class XDA:
         }
         self._timeout = 10
         self._client = Client(http2=True, timeout=self._timeout)
-        self._async_client = AsyncClient(http2=True, timeout=self._timeout)
+        self._async_client = lambda: AsyncClient(http2=True, timeout=self._timeout)
 
     def post(self, thread_id: int, message: str):
         """
@@ -48,7 +48,7 @@ class XDA:
         :param message: reply text
         :param thread_id: XDA thread id
         """
-        async with self._async_client as client:
+        async with self._async_client() as client:
             resp: Response = await client.post(
                 f'{self.url}/posts', data={"thread_id": thread_id, "message": message},
                 headers=self.headers)
@@ -61,7 +61,7 @@ class XDA:
         :param message: post text
         :param post_id: XDA thread id
         """
-        async with self._async_client as client:
+        async with self._async_client() as client:
             resp: Response = await client.post(
                 f'{self.url}/posts/{post_id}', data={"message": message},
                 headers=self.headers)
