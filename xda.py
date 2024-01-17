@@ -4,7 +4,7 @@ SPDX-License-Identifier: GPL-3.0
 authors: @baalajimaestro, @yshalsager
 """
 
-from httpx import AsyncClient, Response, post
+from httpx import AsyncClient, Client, Response
 
 
 class XDA:
@@ -17,6 +17,9 @@ class XDA:
             'XF-Api-Key': self.api_key,
             'Content-Type': 'application/x-www-form-urlencoded'
         }
+        self._timeout = 10
+        self._client = Client(http2=True, timeout=self._timeout)
+        self._async_client = AsyncClient(http2=True, timeout=self._timeout)
 
     def post(self, thread_id: int, message: str):
         """
@@ -24,7 +27,8 @@ class XDA:
         :param message: reply text
         :param thread_id: XDA thread id
         """
-        xda_req = post(f'{self.url}/posts', data={"thread_id": thread_id, "message": message}, headers=self.headers)
+        xda_req = self._client.post(f'{self.url}/posts', data={"thread_id": thread_id, "message": message},
+                                    headers=self.headers)
         if not xda_req.status_code == 200:
             print(f"XDA Error: {xda_req.reason_phrase}\nResponse: {xda_req.text}")
 
@@ -34,7 +38,7 @@ class XDA:
         :param message: post text
         :param post_id: XDA post id
         """
-        xda_req = post(f'{self.url}/posts/{post_id}', data={"message": message}, headers=self.headers)
+        xda_req = self._client.post(f'{self.url}/posts/{post_id}', data={"message": message}, headers=self.headers)
         if not xda_req.status_code == 200:
             print(f"XDA Error: {xda_req.reason_phrase}\nResponse: {xda_req.text}")
 
@@ -44,7 +48,7 @@ class XDA:
         :param message: reply text
         :param thread_id: XDA thread id
         """
-        async with AsyncClient() as client:
+        async with self._async_client as client:
             resp: Response = await client.post(
                 f'{self.url}/posts', data={"thread_id": thread_id, "message": message},
                 headers=self.headers)
@@ -57,7 +61,7 @@ class XDA:
         :param message: post text
         :param post_id: XDA thread id
         """
-        async with AsyncClient() as client:
+        async with self._async_client as client:
             resp: Response = await client.post(
                 f'{self.url}/posts/{post_id}', data={"message": message},
                 headers=self.headers)
